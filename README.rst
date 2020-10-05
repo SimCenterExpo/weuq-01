@@ -1,11 +1,11 @@
 .. _lblWE-Example9:
 
-9 Story Building: Sampling and Reliability Analysis
-===================================================
+9 Story Building: Sampling Analysis
+===================================
 
 Consider the problem of uncertainty quantification in a nine story steel building. The building being modelled is the 9 story LA building presented in the FEMA-355C report. From the description in Appendix B of the FEMA document the building is a **150** ft square building with a height above ground of **120** ft with a weight of approx. **19,800** kips. Eigenvalues are shown in Table 5.1. of the FEMA document to be between **2.3** sec and **2.2** sec depending on connection detals. For this example (and for demonstrative purposes only), this building will be modelled as a shear building with **10** nodes and **9** elements, as shown in following figure. For loading, the Stochastic Wind Generation tool will be used with the gust wind speed being treated as a random variable with a normal distribtion described by a mean :math:`\mu_{gustWS}=20 \mathrm{mph}` and standard deviation :math:`\sigma_{gustWS} =3 \mathrm{mph}`. 
 
-.. figure:: figures/9story.png
+.. figure:: figures/9Story.png
    :align: center
    :width: 600
    :figclass: align-center
@@ -111,75 +111,3 @@ Various views of the graphical display can be obtained by left and right clickin
 .. figure:: figures/9story-RES6.png
    :align: center
    :figclass: align-center
-
-User Defined Output
-^^^^^^^^^^^^^^^^^^^
-
-+----------------+-----------------------+
-| Problem files  | :weuq-02:`/`          |
-+----------------+-----------------------+
-
-In this section we will demonstrate the use of the user defined output option for the EDP panel. In the previous example we got the standard output, which can be both a lot and also limited (in sense you may not get the information you want). In this example we will present how to obtain results just for the roof displacement, the displacement of node **10** in both the **MDOF** and **OpenSees** model generator examples and shear force at the base of the structure. For the OpenSees model, it is also possible to obtain the overturning moment (something not possible in MDOF model due to fact it is modelled using spring elements). The examples could be extended to output for example the element end rotations, plastic rotations, ...
-
-For this example you will need two additional file `recorder.tcl <https://github.com/NHERI-SimCenter/WE-UQ/blob/master/examples/9Story/recorder.tcl>`_ and `postprocess.tcl <https://github.com/NHERI-SimCenter/WE-UQ/blob/master/examples/9Story/postprocess.tcl>`_. 
-
-The recorder script as shown will record the envelope displacements and RMS acceleratiuons in the first two degrees-of-freedom for the nodes in the modes. The script will also record the element forces. The file is as shown below:
-
-.. literalinclude:: recorder.tcl
-   :language: tcl
-
-The postprocess.tcl script shown below will accept as input any of the 10 nodes *in the domain and for each of the two dof directions and element forces.
-
-.. literalinclude:: postprocess.tcl
-   :language: tcl
-
-.. note::
-
-   The user has the option when using the OpenSees SIM application to provide no postprocess script (in which case the main script must create a ``results.out`` file containing a single line with as many space separated numbers as QoI) or the user may provide a Python script that also performs the postprocessing. An example of a postprocessing Python script is :weuq-02:`postprocess.py <src/postprocess.py>`. The Python script at present only responds to nodal displacements.
-
-   .. literalinclude:: ../weuq-02/src/postprocess.py
-      :language: python
-
-The steps are the same as the previous example, with exception of step 4 defining the **EDP**.
-
-1. For the **EDP** panel, we will change the generator to **User Defined**. In the panel that presents itself the user must provide the paths to both the recorder commands and the postprocessing script. Next the user must provide information on the response parameters they are interested in. The user presses the **Add** button and the enters ``Disp_10_1``, ``RMSA_10_1``, and ``Force_1_1`` in the entry field as shown in figure below.
-
-.. figure:: figures/9story-EDP-USER.png
-   :align: center
-   :figclass: align-center
-
-
-2. Next click on the **Run** button. This will cause the backend application to launch dakota. When done the **RES** panel will be selected and the results will be displayed. The results show the values the mean and standard deviation as before but now only for the one quantity of interest.
-
-.. figure:: figures/9story-RES-USER.png
-   :align: center
-   :figclass: align-center
-
-
-Reliability Analysis
-^^^^^^^^^^^^^^^^^^^^
-
-+----------------+-----------------------+
-| Problem files  | :weuq-03:`/`          |
-+----------------+-----------------------+
-
-If the user is interested in the probability that certain response measure will be exceeded an alternative strategy is to perform a reliability analysis. To perform a reliability analysis the steps above would be repeated with the exception that the user would select a reliability analysis method instead of a Forward Propagation method. To obtain reliability results using the Global Reliability methose presented in Dakota choose the **Global Reliability** methods from the methods drop down menu. In the response levels enter a values of **0.5** and **0.8**, specifying that we are interested in the value of the CDF for a displacement of the roof of 0.5in and 0.8in, i.e. what is probability that displacement will be less than 0.8in.
-
-.. figure:: figures/9story-UQ-Reliability.png
-   :align: center
-   :figclass: align-center
-
-After the user fills in the rest of the tabs as per the previous section, the user would then press the **RUN** button. The application (after spinning for a while with the wheel of death) will present the user with the results, which as shown below, indicate that the probabilities as **52%** and **92%**.
-
-.. figure:: figures/9story-RES-Reliability.png
-   :align: center
-   :figclass: align-center
-
-.. warning::
-
-   Reliability analysis can only be performed when their is only one EDP.
-
-   .. figure:: figures/9story-EDP-Reliability.png
-      :align: center
-      :figclass: align-center
-
