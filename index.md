@@ -1,3 +1,9 @@
+---
+title: 9-Story Frame - Sampling with Default EDPs
+summary: Forward propagation of a 9-story frame with stochastic wind loading and default EDPs.
+...
+
+
 9 Story Building: Sampling Analysis {#lblWE-Example9}
 ===================================
 
